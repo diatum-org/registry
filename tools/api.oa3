@@ -1,0 +1,570 @@
+
+openapi: 3.0.0
+# Added by API Auto Mocking Plugin
+info:
+  description:
+    An interface to a registry of distributed nodes for personal storage.
+      emigo-id - hex encoded sha256 of an emigo 4096 public key
+      emigo-key - hex encoded public key
+      handle - user name for account, has a restricted character set
+
+  version: "1.0.5"
+  title: Digital Archive Registry API
+  contact:
+    email: rosborne@coredb.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+
+  - name: admin
+    description: management of server
+
+  - name: info
+    description: details of server
+
+  - name: emigo
+    description: management of emigo registry
+    
+  - name: console
+    description: interface for browser app
+
+paths:
+
+  /console/access:
+    put:
+      tags:
+        - console
+      description: Check if token is valid
+      operationId: check-token
+      parameters:
+        - name: token
+          in: query
+          description: access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+        '404':
+          description: token not found
+        '500':
+          description: internal server error
+          
+  /console/stats:
+    get:
+      tags:
+        - console
+      description: Retrieve stats of server
+      operationId: get-stats
+      parameters:
+        - name: token
+          in: query
+          description: access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SystemStat'
+        '404':
+          description: token not found
+        '500':
+          description: internal server error
+
+  /console/info:
+    get:
+      tags:
+        - console
+      description: Retrieve info of server
+      operationId: get-info
+      parameters:
+        - name: token
+          in: query
+          description: access token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemInfo'
+        '404':
+          description: token not found
+        '500':
+          description: internal server error
+          
+  /admin/server/stats:
+    get:
+      tags:
+        - admin
+      description: Retrieve server system status
+      operationId: admin-server-stats
+      parameters:
+        - name: token
+          in: query
+          description: access token
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: offset into record set
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: max size of record set
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SystemStat'
+        '403':
+          description: access denied
+    post:
+      tags:
+        - admin
+      description: Set server system stat record
+      operationId: admin-server-stat
+      parameters:
+        - name: token
+          in: query
+          description: access token
+          required: false
+          schema:
+            type: string
+        - name: processor
+          in: query
+          description: time
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 100
+        - name: memory
+          in: query
+          description: current memory free
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: storage
+          in: query
+          description: current storage free
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+        '403':
+          description: access denied
+
+  /info/registry:
+    get:
+      tags:
+        - info
+      description: Retrieve server details
+      operationId: get-registry
+      responses:
+        '200':
+          description: sucessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registry'
+
+  /emigo/status:
+    get:
+      tags:
+        - emigo
+      description: Check if handle is available
+      operationId: get-status
+      parameters:
+        - name: handle
+          in: query
+          description: handle to validate
+          required: true
+          schema:
+            type: string
+        - name: emigoId
+          in: query
+          description: id of requesting emigo
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+
+  /emigo/id:
+    get:
+      tags:
+        - emigo
+      description: Get id associated with handle
+      operationId: get-id
+      parameters:
+        - name: handle
+          in: query
+          description: handle to validate
+          required: true
+          schema:
+            type: string
+        - wrap: boolean
+          in: query
+          description: wrap response in quotes
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: emigo-id
+
+  /emigo/messages:
+    get:
+      tags:
+        - emigo
+      description: Retrieve emigo message associated with handle
+      operationId: get-message
+      parameters:
+        - name: emigoId
+          in: query
+          description: referenced id
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+        - name: handle
+          in: query
+          description: referenced handle
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmigoMessage'
+        '404':
+          description: not found
+    post:
+      tags:
+        - emigo
+      description: Send updated emigo message
+      operationId: set-message
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: invalid message
+        '406':
+          description: handle already taken
+        '500':
+          description: internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmigoMessage'
+        description: emigo to message to update
+        required: true
+
+  /emigo/messages/batch:
+    post:
+      tags:
+        - emigo
+      description: Send updated emigo message batch
+      operationId: set-batch
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: emigo-id
+        '401':
+          description: invalid message
+        '406':
+          description: handle already taken
+        '500':
+          description: internal server error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmigoMessage'
+        description: emigo to message to update
+
+  /emigo/messages/revision:
+    get:
+      tags:
+        - emigo
+      description: Retrieve revision of current emigo message
+      operationId: get-revision
+      parameters:
+        - name: emigoId
+          in: query
+          description: referenced id
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+        - name: handle
+          in: query
+          description: referenced handle
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+        '404':
+          description: not found
+
+  /emigo/messages/logo:
+    get:
+      tags:
+        - emigo
+      description: Retrieve image from current emigo message
+      operationId: get-logo
+      parameters:
+        - name: emigoId
+          in: query
+          description: referenced id
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+        - name: handle
+          in: query
+          description: referenced handle
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: not found
+
+  /emigo/messages/name:
+    get:
+      tags:
+        - emigo
+      description: Retrieve name from current emigo message
+      operationId: get-name
+      parameters:
+        - name: emigoId
+          in: query
+          description: referenced id
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+        - name: handle
+          in: query
+          description: referenced handle
+          required: false
+          schema:
+            type: string
+            format: emigo-id
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: not found
+
+
+components:
+  schemas:
+
+    Result:
+      type: object
+      properties:
+        boolValue:
+          type: boolean
+        numValue:
+          type: integer
+          format: int64
+        strValue:
+          type: string
+
+    Registry:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+          format: protocol-version
+
+    Emigo:
+      type: object
+      required:
+        - emigoId
+        - node
+        - revision
+        - version
+      properties:
+        emigoId:
+          type: string
+          format: emigoId
+        name:
+          type: string
+        description:
+          type: string
+        logo:
+          type: string
+          format: base64 encoding of binary image
+        location:
+          type: string
+        node:
+          type: string
+          example: node.coredb.org:9999
+        registry:
+          type: string
+          example: registry.coredb.org:8888
+        revision:
+          type: integer
+          format: int32
+        version:
+          type: string
+          format: protocol-version
+        handle:
+          type: string
+
+    EmigoMessage:
+      type: object
+      required:
+        - key
+        - keyType
+        - signature
+        - data
+      properties:
+        key:
+          type: string
+          format: emigo-key
+        keyType:
+          type: string
+        signature:
+          type: string
+          format: signature of Base64 data converted to hex string
+        data:
+          type: string
+          format: Base64 & JSON serialized string of data object
+
+    ConfigEntry:
+      type: object
+      required:
+        - configId
+        - entry
+      properties:
+        configId:
+          type: string
+        entry:
+          $ref: '#/components/schemas/Entry'
+
+    Entry:
+      type: object
+      properties:
+        name:
+          type: string
+        stringValue:
+          type: string
+        numValue:
+          type: integer
+          format: int64
+        boolValue:
+          type: boolean
+
+    SystemInfo:
+      type: object
+      required:
+        - accounts
+      properties:
+        accounts:
+          type: integer
+          format: int64
+          
+    SystemStat:
+      type: object
+      required:
+        - timestamp
+        - processor
+        - memory
+        - storage
+        - requests
+      properties:
+        timestamp:
+          type: integer
+          format: int32
+        processor:
+          type: integer
+          format: int32
+        memory:
+          type: integer
+          format: int64
+        storage:
+          type: integer
+          format: int64
+        requests:
+          type: integer
+          format: int64
+
+

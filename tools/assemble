@@ -1,0 +1,51 @@
+set -e
+
+MAJOR=`cat major.version`
+MINOR=`cat minor.version`
+VERSION="${MAJOR}_${MINOR}_$1"
+HASH="$2"
+
+# clear previous installer
+rm -rf artifacts
+rm -rf export
+
+# create export path
+mkdir -p export
+
+# create new payloads
+mkdir -p artifacts
+cp ./major.version artifacts/
+cp ./minor.version artifacts/
+cp ./tools/install artifacts/
+cp ./tools/upgrade artifacts/
+cp ./be/target/app.war artifacts/
+cp ./tools/renew.sh artifacts/
+cp ./tools/synccert.sh artifacts/
+cp ./tools/setup.sql artifacts/
+cp ./tools/stat.sh artifacts/
+cp ./tools/schema/baseline.sql artifacts/
+cp ./tools/schema/V01__accounts.sql artifacts/
+cp ./tools/schema/V02__emigo.sql artifacts/
+cd artifacts
+echo "$1" > build.version
+tar cvf install.tar app.war synccert.sh renew.sh setup.sql stat.sh baseline.sql V01__accounts.sql V02__emigo.sql major.version minor.version build.version
+md5sum install.tar > install.tar.md5
+echo "{ \"schema_version\": 2, \"migrate\": [ { \"schema_version\": 0, \"delta\": \"V01__accounts.sql\" }, { \"schema_version\": 1, \"delta\": \"V02__emigo.sql\" } ] }" > migrate.json
+tar cvf upgrade.tar app.war synccert.sh renew.sh setup.sql stat.sh baseline.sql V01__accounts.sql V02__emigo.sql major.version minor.version build.version migrate.json
+md5sum upgrade.tar > upgrade.tar.md5
+cd ..
+
+# create installer
+tar czf ./artifacts/installer.tgz -C artifacts install install.tar install.tar.md5
+cat tools/decompress_install artifacts/installer.tgz > ./artifacts/installer
+
+# create upgrader
+tar czf ./artifacts/updater.tgz -C artifacts upgrade upgrade.tar upgrade.tar.md5
+cat tools/decompress_upgrade artifacts/updater.tgz > ./artifacts/upgrader
+
+# export
+mv ./artifacts/installer ./export/${VERSION}_registry_install_${HASH}
+mv ./artifacts/upgrader ./export/${VERSION}_registry_upgrade_${HASH}
+
+exit 0
+

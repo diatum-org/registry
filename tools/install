@@ -1,0 +1,68 @@
+set -e
+
+echo "updating packages" 
+sudo apt-get update 
+sudo apt-get -y install net-tools 
+sudo apt-get -y install jq 
+sudo apt-get -y install tomcat9 
+sudo apt-get -y install mariadb-server 
+sudo apt-get -y install certbot 
+sudo apt-get -y upgrade
+
+NAME=$1
+sudo mkdir /opt/diatum
+
+echo "enter a console login token:"
+read TOKEN
+
+sudo sed -i '480i <filter><filter-name>CorsFilter</filter-name><filter-class>org.apache.catalina.filters.CorsFilter</filter-class><init-param><param-name>cors.allowed.headers</param-name><param-value>Accept,Accept-Encoding,Accept-Language,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization,Connection,Content-Type,Host,Origin,Referer,Token-Id,User-Agent, X-Requested-With</param-value></init-param><init-param><param-name>cors.allowed.origins</param-name><param-value>*</param-value></init-param><init-param><param-name>cors.allowed.methods</param-name><param-value>GET, POST, PUT, DELETE, OPTIONS, HEAD</param-value></init-param></filter><filter-mapping><filter-name>CorsFilter</filter-name><url-pattern>/*</url-pattern></filter-mapping>' /var/lib/tomcat9/conf/web.xml
+
+sudo sed -i '42i ReadWritePaths=/var/lib/tomcat9/lib/\nReadWritePaths=/opt/' /lib/systemd/system/tomcat9.service
+
+sudo sed -i "87i <Connector port=\"443\" protocol=\"org.apache.coyote.http11.Http11NioProtocol\" maxThreads=\"150\" SSLEnabled=\"true\"><SSLHostConfig><Certificate certificateFile=\"conf/cert.pem\" certificateKeyFile=\"conf/privkey.pem\" certificateChainFile=\"conf/chain.pem\" /></SSLHostConfig></Connector>" /var/lib/tomcat9/conf/server.xml
+
+sudo systemctl daemon-reload
+
+tar xf install.tar
+MAJOR=`cat major.version`
+MINOR=`cat minor.version`
+BUILD=`cat build.version`
+VERSION="${MAJOR}.${MINOR}.${BUILD}"
+echo "{ \"major\": $MAJOR, \"minor\": $MINOR, \"build\": $BUILD, \"schema\": 1 }" > registry.version
+sudo mv registry.version /opt/diatum/
+
+sudo certbot certonly --standalone -d $NAME --agree-tos --no-eff-email --register-unsafely-without-email
+
+echo "$NAME" > /home/ubuntu/nodename
+sudo mysql < setup.sql
+mysql -u root -proot -e "create database registry"
+mysql -u root -proot registry < baseline.sql
+mysql -u root -proot registry < V01__accounts.sql
+mysql -u root -proot registry < V02__emigo.sql
+
+sudo rm -rf /var/lib/tomcat9/webapps/*
+sudo cp app.war /var/lib/tomcat9/webapps/
+sudo chown tomcat:tomcat /var/lib/tomcat9/webapps/app.war
+
+cp stat.sh /home/ubuntu
+cp renew.sh /home/ubuntu
+cp synccert.sh /home/ubuntu
+
+STAT=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''`
+ACCT=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''`
+ACCS=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''`
+CONF=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''`
+
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_host_port', 'https://$NAME/app')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_stat_token', '$STAT')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_config_token', '$CONF')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_account_token', '$ACCT')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_access_token', '$ACCS')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('server_version', '$VERSION')"
+mysql -u root -proot registry -e "insert into config (config_id, string_value) values ('console_access_token', '$TOKEN')"
+
+crontab -r || true
+echo -e '*/15 * * * * bash /home/ubuntu/stat.sh\n3 3 * * * bash /home/ubuntu/synccert.sh' | crontab
+
+sudo bash /home/ubuntu/renew.sh
+
