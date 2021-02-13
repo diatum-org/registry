@@ -3,7 +3,6 @@ set -e
 MAJOR=`cat major.version`
 MINOR=`cat minor.version`
 VERSION="${MAJOR}_${MINOR}_$1"
-HASH="$2"
 
 # clear previous installer
 rm -rf artifacts
@@ -44,8 +43,8 @@ tar czf ./artifacts/updater.tgz -C artifacts upgrade upgrade.tar upgrade.tar.md5
 cat tools/decompress_upgrade artifacts/updater.tgz > ./artifacts/upgrader
 
 # export
-mv ./artifacts/installer ./export/${VERSION}_registry_install_${HASH}
-mv ./artifacts/upgrader ./export/${VERSION}_registry_upgrade_${HASH}
+mv ./artifacts/installer ./export/${VERSION}_registry_install
+mv ./artifacts/upgrader ./export/${VERSION}_registry_upgrade
 
 exit 0
 
