@@ -33,3 +33,23 @@ jobs:
           npm install @angular/cli
           npm run-script ng build -- --prod --base-href /app/
           
+      # Build backend of registry app server
+      - name: Build backend
+        run: |
+          cd be
+          mvn -B verify # -B batch mode makes Maven less verbose
+          mvn install -DskipTests
+          
+      # Export installer for registry app server
+      - name: Export installer
+        run: |
+          rm -rf export
+          mkdir -p export
+          bash tools/assemble $GITHUB_RUN_NUMBER '0'
+
+      # Export installer
+      - name: Export
+        uses: actions/upload-artifact@v2
+        with:
+          name: installer
+          path: export 
