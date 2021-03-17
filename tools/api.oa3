@@ -4,8 +4,8 @@ openapi: 3.0.0
 info:
   description:
     An interface to a registry of distributed nodes for personal storage.
-      emigo-id - hex encoded sha256 of an emigo 4096 public key
-      emigo-key - hex encoded public key
+      amigo-id - hex encoded sha256 of an amigo 4096 public key
+      amigo-key - hex encoded public key
       handle - user name for account, has a restricted character set
 
   version: "1.0.5"
@@ -23,8 +23,8 @@ tags:
   - name: info
     description: details of server
 
-  - name: emigo
-    description: management of emigo registry
+  - name: amigo
+    description: management of amigo registry
     
   - name: console
     description: interface for browser app
@@ -196,10 +196,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Registry'
 
-  /emigo/status:
+  /amigo/status:
     get:
       tags:
-        - emigo
+        - amigo
       description: Check if handle is available
       operationId: get-status
       parameters:
@@ -209,13 +209,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: emigoId
+        - name: amigoId
           in: query
-          description: id of requesting emigo
+          description: id of requesting amigo
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
       responses:
         '200':
           description: successful operation
@@ -224,10 +224,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Result'
 
-  /emigo/id:
+  /amigo/id:
     get:
       tags:
-        - emigo
+        - amigo
       description: Get id associated with handle
       operationId: get-id
       parameters:
@@ -250,42 +250,42 @@ paths:
             application/json:
               schema:
                 type: string
-                format: emigo-id
+                format: amigo-id
 
-  /emigo/messages:
+  /amigo/messages:
     get:
       tags:
-        - emigo
-      description: Retrieve emigo message associated with handle
+        - amigo
+      description: Retrieve amigo message associated with handle
       operationId: get-message
       parameters:
-        - name: emigoId
+        - name: amigoId
           in: query
           description: referenced id
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
         - name: handle
           in: query
           description: referenced handle
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EmigoMessage'
+                $ref: '#/components/schemas/AmigoMessage'
         '404':
           description: not found
     post:
       tags:
-        - emigo
-      description: Send updated emigo message
+        - amigo
+      description: Send updated amigo message
       operationId: set-message
       responses:
         '200':
@@ -300,15 +300,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmigoMessage'
-        description: emigo to message to update
+              $ref: '#/components/schemas/AmigoMessage'
+        description: amigo to message to update
         required: true
 
-  /emigo/messages/batch:
+  /amigo/messages/batch:
     post:
       tags:
-        - emigo
-      description: Send updated emigo message batch
+        - amigo
+      description: Send updated amigo message batch
       operationId: set-batch
       responses:
         '200':
@@ -319,7 +319,7 @@ paths:
                 type: array
                 items:
                   type: string
-                  format: emigo-id
+                  format: amigo-id
         '401':
           description: invalid message
         '406':
@@ -332,30 +332,30 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/EmigoMessage'
-        description: emigo to message to update
+                $ref: '#/components/schemas/AmigoMessage'
+        description: amigo to message to update
 
-  /emigo/messages/revision:
+  /amigo/messages/revision:
     get:
       tags:
-        - emigo
-      description: Retrieve revision of current emigo message
+        - amigo
+      description: Retrieve revision of current amigo message
       operationId: get-revision
       parameters:
-        - name: emigoId
+        - name: amigoId
           in: query
           description: referenced id
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
         - name: handle
           in: query
           description: referenced handle
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
       responses:
         '200':
           description: successful operation
@@ -367,27 +367,27 @@ paths:
         '404':
           description: not found
 
-  /emigo/messages/logo:
+  /amigo/messages/logo:
     get:
       tags:
-        - emigo
-      description: Retrieve image from current emigo message
+        - amigo
+      description: Retrieve image from current amigo message
       operationId: get-logo
       parameters:
-        - name: emigoId
+        - name: amigoId
           in: query
           description: referenced id
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
         - name: handle
           in: query
           description: referenced handle
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
       responses:
         '200':
           description: successful operation
@@ -399,27 +399,27 @@ paths:
         '404':
           description: not found
 
-  /emigo/messages/name:
+  /amigo/messages/name:
     get:
       tags:
-        - emigo
-      description: Retrieve name from current emigo message
+        - amigo
+      description: Retrieve name from current amigo message
       operationId: get-name
       parameters:
-        - name: emigoId
+        - name: amigoId
           in: query
           description: referenced id
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
         - name: handle
           in: query
           description: referenced handle
           required: false
           schema:
             type: string
-            format: emigo-id
+            format: amigo-id
       responses:
         '200':
           description: successful operation
@@ -454,17 +454,17 @@ components:
           type: string
           format: protocol-version
 
-    Emigo:
+    Amigo:
       type: object
       required:
-        - emigoId
+        - amigoId
         - node
         - revision
         - version
       properties:
-        emigoId:
+        amigoId:
           type: string
-          format: emigoId
+          format: amigoId
         name:
           type: string
         description:
@@ -489,7 +489,7 @@ components:
         handle:
           type: string
 
-    EmigoMessage:
+    AmigoMessage:
       type: object
       required:
         - key
@@ -499,7 +499,7 @@ components:
       properties:
         key:
           type: string
-          format: emigo-key
+          format: amigo-key
         keyType:
           type: string
         signature:

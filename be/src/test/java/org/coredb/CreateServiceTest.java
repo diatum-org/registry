@@ -28,8 +28,8 @@ import java.security.*;
 import java.security.spec.*;
 import java.util.Base64;
 
-import org.coredb.registry.api.EmigoApi;
-import org.coredb.registry.model.EmigoMessage;
+import org.coredb.registry.api.AmigoApi;
+import org.coredb.registry.model.AmigoMessage;
 
 @RunWith(SpringRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -37,13 +37,13 @@ import org.coredb.registry.model.EmigoMessage;
 public class CreateServiceTest {
 
   @Autowired
-  private EmigoApi emigoApi;
+  private AmigoApi emigoApi;
 
   @Test
   public void A_createService() throws Exception {
 
     ResponseEntity<Void> set;
-    EmigoMessage msg = new EmigoMessage();
+    AmigoMessage msg = new AmigoMessage();
 
     // test fail 
     msg.setKey("30820222300d06092a864886f70d01010105000382020f003082020a02820201008ed4bc609844479538067d6d468d7eb8736ab05167ffae63ad042d451457d1c693f6889dfe20b44d0a47eda6539730a1c37d38905ed586b816620f9aea75f90c98dd4c0977b3ec636cf2570ac69913a7d4be823076ba88b3ce9faabb8db11de48283c50a0e7a31be255135f6e8a8af877ddeb38763539036d439d336f370fb604735173d762fc99015bb4ba1a7385c3028844d399c70f819af87eefd2ede4cb44bc1364c810b169de5cf83514fe2e4cdded7031a69b5b7d13ed30ebdcabea5a54030fe1d01729273af812c539eb542d3c5068f15e78bf06786ffab8669d0098ee30532ad7700c365d1a24d107b550c389d14556da4112e1c2500fdc24bd01c7a952880e0991a17aa5b9c055b399410c6c031ed9fb15e1b1927babe7dcbe2d7ea175fa2a6eec148aa7f722b2dd4d924a56e650232663c8acfa21c4ead4ec24c12a181b02bbd2cdccec7646c094941aa4d81d88a4fc32185f17d32d7969b3c1605cb3e824028f7e9d7af071992e64b56bde417f6c656a919e1576abdc35171f4e4ab2f30083e390570c931af8736bc7e4e609105de8ab44276721991d24c3e22ebfdc4f9973610b960c7a376e49eb45b68d5d4cfa3fb31172b61d41cad989e7e0dd14d7e567e1c9713a8039fa64d6b1504e88fd8aff084ec381bd8f7507cf26e9e2986b3ecead6c1e8414710ea7e90b95a7c7267d792c49fe862707f7e7ea4d9d10203010001");

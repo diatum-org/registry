@@ -10,12 +10,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * Emigo
+ * Amigo
  */
 @Validated
-public class Emigo   {
-  @JsonProperty("emigoId")
-  private String emigoId = null;
+public class Amigo   {
+  @JsonProperty("amigoId")
+  private String amigoId = null;
 
   @JsonProperty("name")
   private String name = null;
@@ -44,27 +44,27 @@ public class Emigo   {
   @JsonProperty("handle")
   private String handle = null;
 
-  public Emigo emigoId(String emigoId) {
-    this.emigoId = emigoId;
+  public Amigo amigoId(String amigoId) {
+    this.amigoId = amigoId;
     return this;
   }
 
   /**
-   * Get emigoId
-   * @return emigoId
+   * Get amigoId
+   * @return amigoId
   **/
   @ApiModelProperty(required = true, value = "")
   @NotNull
 
-  public String getEmigoId() {
-    return emigoId;
+  public String getAmigoId() {
+    return amigoId;
   }
 
-  public void setEmigoId(String emigoId) {
-    this.emigoId = emigoId;
+  public void setAmigoId(String amigoId) {
+    this.amigoId = amigoId;
   }
 
-  public Emigo name(String name) {
+  public Amigo name(String name) {
     this.name = name;
     return this;
   }
@@ -83,7 +83,7 @@ public class Emigo   {
     this.name = name;
   }
 
-  public Emigo description(String description) {
+  public Amigo description(String description) {
     this.description = description;
     return this;
   }
@@ -102,7 +102,7 @@ public class Emigo   {
     this.description = description;
   }
 
-  public Emigo logo(String logo) {
+  public Amigo logo(String logo) {
     this.logo = logo;
     return this;
   }
@@ -121,7 +121,7 @@ public class Emigo   {
     this.logo = logo;
   }
 
-  public Emigo location(String location) {
+  public Amigo location(String location) {
     this.location = location;
     return this;
   }
@@ -140,7 +140,7 @@ public class Emigo   {
     this.location = location;
   }
 
-  public Emigo node(String node) {
+  public Amigo node(String node) {
     this.node = node;
     return this;
   }
@@ -160,7 +160,7 @@ public class Emigo   {
     this.node = node;
   }
 
-  public Emigo registry(String registry) {
+  public Amigo registry(String registry) {
     this.registry = registry;
     return this;
   }
@@ -179,7 +179,7 @@ public class Emigo   {
     this.registry = registry;
   }
 
-  public Emigo revision(Integer revision) {
+  public Amigo revision(Integer revision) {
     this.revision = revision;
     return this;
   }
@@ -199,7 +199,7 @@ public class Emigo   {
     this.revision = revision;
   }
 
-  public Emigo version(String version) {
+  public Amigo version(String version) {
     this.version = version;
     return this;
   }
@@ -219,7 +219,7 @@ public class Emigo   {
     this.version = version;
   }
 
-  public Emigo handle(String handle) {
+  public Amigo handle(String handle) {
     this.handle = handle;
     return this;
   }
@@ -247,30 +247,30 @@ public class Emigo   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Emigo emigo = (Emigo) o;
-    return Objects.equals(this.emigoId, emigo.emigoId) &&
-        Objects.equals(this.name, emigo.name) &&
-        Objects.equals(this.description, emigo.description) &&
-        Objects.equals(this.logo, emigo.logo) &&
-        Objects.equals(this.location, emigo.location) &&
-        Objects.equals(this.node, emigo.node) &&
-        Objects.equals(this.registry, emigo.registry) &&
-        Objects.equals(this.revision, emigo.revision) &&
-        Objects.equals(this.version, emigo.version) &&
-        Objects.equals(this.handle, emigo.handle);
+    Amigo amigo = (Amigo) o;
+    return Objects.equals(this.amigoId, amigo.amigoId) &&
+        Objects.equals(this.name, amigo.name) &&
+        Objects.equals(this.description, amigo.description) &&
+        Objects.equals(this.logo, amigo.logo) &&
+        Objects.equals(this.location, amigo.location) &&
+        Objects.equals(this.node, amigo.node) &&
+        Objects.equals(this.registry, amigo.registry) &&
+        Objects.equals(this.revision, amigo.revision) &&
+        Objects.equals(this.version, amigo.version) &&
+        Objects.equals(this.handle, amigo.handle);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(emigoId, name, description, logo, location, node, registry, revision, version, handle);
+    return Objects.hash(amigoId, name, description, logo, location, node, registry, revision, version, handle);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Emigo {\n");
+    sb.append("class Amigo {\n");
     
-    sb.append("    emigoId: ").append(toIndentedString(emigoId)).append("\n");
+    sb.append("    amigoId: ").append(toIndentedString(amigoId)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    logo: ").append(toIndentedString(logo)).append("\n");

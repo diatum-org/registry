@@ -5,7 +5,7 @@ import java.net.*;
 import java.security.*;
 import java.security.spec.*;
 import java.util.*;
-import org.coredb.registry.model.EmigoMessage;
+import org.coredb.registry.model.AmigoMessage;
 import org.coredb.registry.model.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.*;
@@ -34,26 +34,26 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 @Controller
-public class EmigoApiController implements EmigoApi {
+public class AmigoApiController implements AmigoApi {
 
-    private static final Logger log = LoggerFactory.getLogger(EmigoApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(AmigoApiController.class);
 
     private final ObjectMapper objectMapper;
 
     private final HttpServletRequest request;
 
     @org.springframework.beans.factory.annotation.Autowired
-    private EmigoService emigoService;
+    private EmigoService amigoService;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public EmigoApiController(ObjectMapper objectMapper, HttpServletRequest request) {
+    public AmigoApiController(ObjectMapper objectMapper, HttpServletRequest request) {
         this.objectMapper = objectMapper;
         this.request = request;
     }
 
     public ResponseEntity<String> getId(@NotNull @ApiParam(value = "handle to validate", required = true) @Valid @RequestParam(value = "handle", required = true) String handle, @ApiParam(value = "wrap response in quotes") @Valid @RequestParam(value = "wrap", required = false) Boolean wrap) {
       try {
-        String id = emigoService.getId(handle);
+        String id = amigoService.getId(handle);
         if(wrap != null && wrap == true) {
           id = "\"" + id + "\"";
         }
@@ -67,25 +67,25 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<EmigoMessage> getMessage(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "emigoId", required = false) String emigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
+    public ResponseEntity<AmigoMessage> getMessage(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "amigoId", required = false) String amigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
       try {
-        EmigoMessage msg = emigoService.getMessage(emigoId, handle);
-        return new ResponseEntity<EmigoMessage>(msg, HttpStatus.OK);
+        AmigoMessage msg = amigoService.getMessage(amigoId, handle);
+        return new ResponseEntity<AmigoMessage>(msg, HttpStatus.OK);
       }
       catch(NotFoundException e) {
-        return new ResponseEntity<EmigoMessage>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<AmigoMessage>(HttpStatus.NOT_FOUND);
       }
       catch(IllegalArgumentException e) {
-        return new ResponseEntity<EmigoMessage>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<AmigoMessage>(HttpStatus.BAD_REQUEST);
       }
       catch(Exception e) {
-        return new ResponseEntity<EmigoMessage>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<AmigoMessage>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
 
-    public ResponseEntity<Integer> getRevision(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "emigoId", required = false) String emigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
+    public ResponseEntity<Integer> getRevision(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "amigoId", required = false) String amigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
       try {
-        Integer rev = emigoService.getRevision(emigoId, handle);
+        Integer rev = amigoService.getRevision(amigoId, handle);
         return new ResponseEntity<Integer>(rev, HttpStatus.OK);
       }
       catch(NotFoundException e) {
@@ -99,9 +99,9 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<String> getName(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "emigoId", required = false) String emigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
+    public ResponseEntity<String> getName(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "amigoId", required = false) String amigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
       try {
-        String name = "\"" + emigoService.getName(emigoId, handle) + "\"";
+        String name = "\"" + amigoService.getName(amigoId, handle) + "\"";
         return new ResponseEntity<String>(name, HttpStatus.OK);
       }
       catch(NotFoundException e) {
@@ -115,9 +115,9 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<InputStreamResource> getLogo(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "emigoId", required = false) String emigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
+    public ResponseEntity<InputStreamResource> getLogo(@ApiParam(value = "referenced id") @Valid @RequestParam(value = "amigoId", required = false) String amigoId,@ApiParam(value = "referenced handle") @Valid @RequestParam(value = "handle", required = false) String handle) {
       try {
-        InputStream stream = emigoService.getLogo(emigoId, handle);
+        InputStream stream = amigoService.getLogo(amigoId, handle);
         InputStreamResource resource = new InputStreamResource(stream);
         String mimeType = URLConnection.guessContentTypeFromStream(stream);
         return ResponseEntity.status(HttpStatus.OK)
@@ -134,9 +134,9 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<Result> getStatus(@NotNull @ApiParam(value = "handle to validate", required = true) @Valid @RequestParam(value = "handle", required = true) String handle,@ApiParam(value = "id of requesting emigo") @Valid @RequestParam(value = "emigoId", required = false) String emigoId) {
+    public ResponseEntity<Result> getStatus(@NotNull @ApiParam(value = "handle to validate", required = true) @Valid @RequestParam(value = "handle", required = true) String handle,@ApiParam(value = "id of requesting amigo") @Valid @RequestParam(value = "amigoId", required = false) String amigoId) {
       try {
-        Result res = emigoService.getStatus(handle, emigoId);
+        Result res = amigoService.getStatus(handle, amigoId);
         return new ResponseEntity<Result>(res, HttpStatus.OK);
       }
       catch(Exception e) {
@@ -144,9 +144,9 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<List<String>> setBatch(@ApiParam(value = "emigo to message to update"  )  @Valid @RequestBody List<EmigoMessage> body) {
+    public ResponseEntity<List<String>> setBatch(@ApiParam(value = "amigo to message to update"  )  @Valid @RequestBody List<AmigoMessage> body) {
       try {
-        List<String> ids = emigoService.setBatch(body);
+        List<String> ids = amigoService.setBatch(body);
         return new ResponseEntity<List<String>>(ids, HttpStatus.OK);
       } 
       catch(NotAcceptableException e) {
@@ -163,9 +163,9 @@ public class EmigoApiController implements EmigoApi {
       }
     }
 
-    public ResponseEntity<Void> setMessage(@ApiParam(value = "emigo to message to update" ,required=true )  @Valid @RequestBody EmigoMessage body) {
+    public ResponseEntity<Void> setMessage(@ApiParam(value = "amigo to message to update" ,required=true )  @Valid @RequestBody AmigoMessage body) {
       try {
-        emigoService.setMessage(body);
+        amigoService.setMessage(body);
         return new ResponseEntity<Void>(HttpStatus.OK);
       }
       catch(NotAcceptableException e) {

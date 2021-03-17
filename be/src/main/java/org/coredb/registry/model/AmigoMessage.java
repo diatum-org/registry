@@ -10,10 +10,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 /**
- * EmigoMessage
+ * AmigoMessage
  */
 @Validated
-public class EmigoMessage   {
+public class AmigoMessage   {
   @JsonProperty("key")
   private String key = null;
 
@@ -26,7 +26,7 @@ public class EmigoMessage   {
   @JsonProperty("data")
   private String data = null;
 
-  public EmigoMessage key(String key) {
+  public AmigoMessage key(String key) {
     this.key = key;
     return this;
   }
@@ -46,7 +46,7 @@ public class EmigoMessage   {
     this.key = key;
   }
 
-  public EmigoMessage keyType(String keyType) {
+  public AmigoMessage keyType(String keyType) {
     this.keyType = keyType;
     return this;
   }
@@ -66,7 +66,7 @@ public class EmigoMessage   {
     this.keyType = keyType;
   }
 
-  public EmigoMessage signature(String signature) {
+  public AmigoMessage signature(String signature) {
     this.signature = signature;
     return this;
   }
@@ -86,7 +86,7 @@ public class EmigoMessage   {
     this.signature = signature;
   }
 
-  public EmigoMessage data(String data) {
+  public AmigoMessage data(String data) {
     this.data = data;
     return this;
   }
@@ -115,11 +115,11 @@ public class EmigoMessage   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    EmigoMessage emigoMessage = (EmigoMessage) o;
-    return Objects.equals(this.key, emigoMessage.key) &&
-        Objects.equals(this.keyType, emigoMessage.keyType) &&
-        Objects.equals(this.signature, emigoMessage.signature) &&
-        Objects.equals(this.data, emigoMessage.data);
+    AmigoMessage amigoMessage = (AmigoMessage) o;
+    return Objects.equals(this.key, amigoMessage.key) &&
+        Objects.equals(this.keyType, amigoMessage.keyType) &&
+        Objects.equals(this.signature, amigoMessage.signature) &&
+        Objects.equals(this.data, amigoMessage.data);
   }
 
   @Override
@@ -130,7 +130,7 @@ public class EmigoMessage   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class EmigoMessage {\n");
+    sb.append("class AmigoMessage {\n");
     
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("    keyType: ").append(toIndentedString(keyType)).append("\n");

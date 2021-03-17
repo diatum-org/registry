@@ -25,8 +25,8 @@ import java.nio.charset.StandardCharsets;
 
 import static org.coredb.registry.NameRegistry.*;
 
-import org.coredb.registry.model.Emigo;
-import org.coredb.registry.model.EmigoMessage;
+import org.coredb.registry.model.Amigo;
+import org.coredb.registry.model.AmigoMessage;
 import org.coredb.registry.model.Result;
 
 import org.coredb.registry.jpa.entity.Account;
@@ -81,7 +81,7 @@ public class EmigoService {
     return emigos.get(0).getEmigoId();
   }
 
-  public EmigoMessage getMessage(String emigoId, String handle) throws NotFoundException, IllegalArgumentException {
+  public AmigoMessage getMessage(String emigoId, String handle) throws NotFoundException, IllegalArgumentException {
     
     // retrieve any records for id
     if(emigoId != null) {
@@ -204,21 +204,21 @@ public class EmigoService {
     }
   }
 
-  private Emigo decode(String base)  throws IllegalArgumentException {
+  private Amigo decode(String base)  throws IllegalArgumentException {
     
     // deserialize message data
     try {
       byte[] bytes = Base64.getDecoder().decode(base);
       String serial = new String(bytes);
       ObjectMapper mapper = new ObjectMapper();
-      return mapper.readValue(serial, Emigo.class);
+      return mapper.readValue(serial, Amigo.class);
     }
     catch(Exception e) {
       throw new IllegalArgumentException("invalid emigo message");
     }
   }
 
-  private Emigo getEmigo(EmigoMessage msg) throws IllegalArgumentException, Exception {
+  private Amigo getEmigo(AmigoMessage msg) throws IllegalArgumentException, Exception {
 
     // validate emigo message
     if(msg.getKey() == null || msg.getKeyType() == null || msg.getData() == null || msg.getSignature() == null) {
@@ -234,10 +234,10 @@ public class EmigoService {
     }
 
     //populate data entry
-    Emigo emigo = decode(msg.getData());
+    Amigo emigo = decode(msg.getData());
 
     //validate key and id
-    if(!emigo.getEmigoId().equals(getEmigoId(key))) {
+    if(!emigo.getAmigoId().equals(getEmigoId(key))) {
       throw new IllegalArgumentException("emigo key id mismatch");
     }
 
@@ -245,9 +245,9 @@ public class EmigoService {
   }
 
   @Transactional
-  public List<String> setBatch(List<EmigoMessage> msgs) {
+  public List<String> setBatch(List<AmigoMessage> msgs) {
     List<String> ids = new ArrayList<String>();
-    for(EmigoMessage msg: msgs) {
+    for(AmigoMessage msg: msgs) {
       try {
         ids.add(setMessage(msg));
       }
@@ -258,7 +258,7 @@ public class EmigoService {
     return ids;
   }
 
-  private byte[] getEmigoLogo(Emigo emigo) {
+  private byte[] getEmigoLogo(Amigo emigo) {
     if(emigo == null || emigo.getLogo() == null) {
       return null;
     }
@@ -272,10 +272,10 @@ public class EmigoService {
   }
 
   @Transactional
-  public String setMessage(EmigoMessage msg) throws IllegalArgumentException, NotAcceptableException, Exception {
+  public String setMessage(AmigoMessage msg) throws IllegalArgumentException, NotAcceptableException, Exception {
     
     // extract emigo object
-    Emigo emigo = getEmigo(msg);
+    Amigo emigo = getEmigo(msg);
 
     // get current time
     Long cur = Instant.now().getEpochSecond();
@@ -294,7 +294,7 @@ public class EmigoService {
     List<Account> accounts = accountRepository.findByHandle(emigo.getHandle());
 
     // retrieve any accounts with matching emigo id
-    List<Account> emigos = accountRepository.findByEmigoId(emigo.getEmigoId());
+    List<Account> emigos = accountRepository.findByEmigoId(emigo.getAmigoId());
     if(emigos.isEmpty()) {
 
       // check if handle is available
@@ -302,7 +302,7 @@ public class EmigoService {
         throw new NotAcceptableException("handle already taken");
       }
       Account account = new Account();
-      account.setEmigoId(emigo.getEmigoId());
+      account.setEmigoId(emigo.getAmigoId());
       account.setHandle(emigo.getHandle());
       account.setName(emigo.getName());
       account.setLogo(getEmigoLogo(emigo));
@@ -347,7 +347,7 @@ public class EmigoService {
       }
     }
 
-    return emigo.getEmigoId();
+    return emigo.getAmigoId();
   }
 }
 

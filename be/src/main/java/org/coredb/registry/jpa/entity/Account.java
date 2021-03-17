@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.*;
 import javax.persistence.*;
 
-import org.coredb.registry.model.EmigoMessage;
+import org.coredb.registry.model.AmigoMessage;
 
 @Entity
 @Table(name = "account", uniqueConstraints = @UniqueConstraint(columnNames = { "id" }))
-public class Account extends EmigoMessage implements Serializable {
+public class Account extends AmigoMessage implements Serializable {
   private Integer id;
   private String emigoId;
   private String handle;
