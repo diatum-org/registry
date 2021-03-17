@@ -1,5 +1,4 @@
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
 info:
   description:
     An interface to a registry of distributed nodes for personal storage.
@@ -8,9 +7,9 @@ info:
       handle - user name for account, has a restricted character set
 
   version: "1.0.5"
-  title: Digital Archive Registry API
+  title: Diatum Registry API
   contact:
-    email: rosborne@coredb.org
+    email: info@diatum.org
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
